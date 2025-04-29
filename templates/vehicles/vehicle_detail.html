@@ -1,0 +1,23 @@
+{% extends 'base.html' %} {% block title %}Vehicle Details{% endblock %} {% block content %}
+<div class="card mx-auto" style="max-width: 700px">
+    {% if vehicle.photo %}
+    <img src="{{ vehicle.photo.url }}" class="card-img-top" alt="{{ vehicle.reg_number }}" />
+    {% endif %}
+    <div class="card-body">
+        <h3 class="card-title">{{ vehicle.reg_number }}</h3>
+        <p class="card-text">
+            <strong>Make:</strong> {{ vehicle.make }}<br />
+            <strong>Model:</strong> {{ vehicle.model }}<br />
+            <strong>Year:</strong> {{ vehicle.year }}<br />
+            {% if vehicle.vin %}
+            <strong>VIN:</strong> {{ vehicle.vin }}<br />
+            {% endif %}
+        </p>
+        <div class="mt-3">
+            <a href="{% url 'vehicle-edit' vehicle.pk %}" class="btn btn-outline-warning me-2"> <i class="bi bi-pencil-square"></i> Edit </a>
+            <a href="{% url 'vehicle-delete' vehicle.pk %}" class="btn btn-outline-danger"> <i class="bi bi-trash"></i> Delete </a>
+            <a href="#" class="btn btn-outline-primary ms-2" target="_blank"> <i class="bi bi-link-45deg"></i> Share Link </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

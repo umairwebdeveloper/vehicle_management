@@ -1,0 +1,20 @@
+{% extends 'base.html' %} {% load widget_tweaks %} {% block title %}{% if form.instance.pk %}Edit{% else %}Add{% endif %} Vehicle{% endblock %} {% block content %}
+<div class="card mx-auto" style="max-width: 600px">
+    <div class="card-body">
+        <h4 class="card-title mb-4">{% if form.instance.pk %}Edit Vehicle{% else %}Add Vehicle{% endif %}</h4>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %} {% for field in form.visible_fields %}
+            <div class="mb-3">
+                {{ field.label_tag }} {% render_field field class="form-control" %} {% if field.help_text %}
+                <div class="form-text">{{ field.help_text }}</div>
+                {% endif %} {% for error in field.errors %}
+                <div class="invalid-feedback d-block">{{ error }}</div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-success"><i class="bi bi-save"></i> {% if form.instance.pk %}Save Changes{% else %}Create Vehicle{% endif %}</button>
+            <a href="{% url 'vehicle-list' %}" class="btn btn-secondary ms-2">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

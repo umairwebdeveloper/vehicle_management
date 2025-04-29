@@ -1,0 +1,16 @@
+{% extends 'base.html' %} {% block title %}Delete Vehicle{% endblock %} {% block content %}
+<div class="card mx-auto my-5" style="max-width: 600px">
+    <div class="card-body text-center">
+        <h4 class="card-title text-danger"><i class="bi bi-exclamation-triangle-fill me-2"></i>Confirm Delete</h4>
+        <p class="mb-4">
+            Are you sure you want to delete the vehicle
+            <strong>{{ vehicle.reg_number }} &mdash; {{ vehicle.make }} {{ vehicle.model }} ({{ vehicle.year }})</strong>?
+        </p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger"><i class="bi bi-trash-fill me-1"></i> Yes, Delete</button>
+            <a href="{% url 'vehicle-detail' vehicle.pk %}" class="btn btn-secondary ms-2"> <i class="bi bi-x-circle me-1"></i> Cancel </a>
+        </form>
+    </div>
+</div>
+{% endblock %}
