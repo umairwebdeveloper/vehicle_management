@@ -1,0 +1,23 @@
+{% extends 'base.html' %} {% load widget_tweaks %} {% block title %}{% if form.instance.pk %}Edit{% else %}Add{% endif %} Maintenance{% endblock %} {% block content %}
+<div class="card mx-auto" style="max-width: 600px">
+    <div class="card-body">
+        <h4 class="card-title mb-4">{% if form.instance.pk %}Edit{% else %}Add{% endif %} Maintenance Log</h4>
+        <form method="post">
+            {% csrf_token %} {% for field in form.visible_fields %}
+            <div class="mb-3">
+                {{ field.label_tag }} {% render_field field class=field.field.widget.attrs.class %} {% if field.help_text %}
+                <div class="form-text">{{ field.help_text }}</div>
+                {% endif %} {% for err in field.errors %}
+                <div class="invalid-feedback d-block">{{ err }}</div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-success">
+                <i class="bi bi-save"></i>
+                {% if form.instance.pk %}Save Changes{% else %}Create Log{% endif %}
+            </button>
+            <a href="{% url 'maintenance-list' %}" class="btn btn-secondary ms-2">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

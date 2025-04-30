@@ -5,7 +5,7 @@ from .models import Vehicle
 class VehicleForm(forms.ModelForm):
     class Meta:
         model = Vehicle
-        fields = ["reg_number", "make", "model", "year", "vin", "photo"]
+        fields = ["reg_number", "make", "model", "year", "vin"]
         widgets = {
             "reg_number": forms.TextInput(attrs={"autofocus": True}),
         }

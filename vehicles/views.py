@@ -13,6 +13,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .models import Vehicle
 from .forms import VehicleForm
 
+# from .snippets import fetch_vehicle_from_mot
+
+
 @login_required(login_url="/auth/login/")
 def dashboard(request):
     if request.user.is_authenticated:
