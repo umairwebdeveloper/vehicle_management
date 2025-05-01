@@ -1,4 +1,12 @@
 {% extends 'base.html' %} {% block title %}Delete Vehicle{% endblock %} {% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'vehicle-list' %}">Vehicles</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'vehicle-detail' vehicle.pk %}">Vehicle Detail</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Delete Vehicles</li>
+    </ol>
+</nav>
 <div class="card mx-auto my-5" style="max-width: 600px">
     <div class="card-body text-center">
         <h4 class="card-title text-danger"><i class="bi bi-exclamation-triangle-fill me-2"></i>Confirm Delete</h4>

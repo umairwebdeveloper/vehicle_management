@@ -45,3 +45,15 @@ class ChangePasswordForm(forms.Form):
     old_password = forms.CharField(label="Old Password", widget=forms.PasswordInput)
     password1 = forms.CharField(label="Set Password", widget=forms.PasswordInput)
     password2 = forms.CharField(label="Confirm Password", widget=forms.PasswordInput)
+
+
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ["first_name", "last_name", "username", "email"]
+        widgets = {
+            "first_name": forms.TextInput(attrs={"class": "form-control"}),
+            "last_name": forms.TextInput(attrs={"class": "form-control"}),
+            "username": forms.TextInput(attrs={"class": "form-control"}),
+            "email": forms.EmailInput(attrs={"class": "form-control"}),
+        }

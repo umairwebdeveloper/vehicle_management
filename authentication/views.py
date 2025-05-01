@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .forms import LoginForm, SignUpForm
+from .forms import LoginForm, SignUpForm, UserProfileForm
 from django.contrib import auth, messages
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import PasswordChangeForm
@@ -68,7 +68,22 @@ def login(request):
 
 def logout(request):
     auth.logout(request)
+    messages.success(request, "You have been logged out successfully.")
     return redirect("login")
+
+
+@login_required
+def profile(request):
+    user = request.user
+    if request.method == "POST":
+        form = UserProfileForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Your profile has been updated.")
+            return redirect("profile")
+    else:
+        form = UserProfileForm(instance=user)
+    return render(request, "authentication/profile.html", {"form": form})
 
 
 @login_required(login_url="/auth/login/")
@@ -85,4 +100,4 @@ def change_password(request):
 
     form = PasswordChangeForm(request.user)
     context = {"form": form}
-    return render(request, "dashboard/change_password/change_password.html", context)
+    return render(request, "authentication/change_password.html", context)

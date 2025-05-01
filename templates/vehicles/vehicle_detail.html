@@ -1,21 +1,22 @@
 {% extends 'base.html' %} {% block title %}Vehicle Details{% endblock %} {% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'vehicle-list' %}">Vehicles</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Vehicle Detail</li>
+    </ol>
+</nav>
 <div class="container mt-4">
-    <!-- Back button -->
-    <button type="button" class="btn btn-outline-secondary mb-3" onclick="history.back()"><i class="bi bi-arrow-left"></i> Back</button>
-
     <!-- Vehicle card -->
     <div class="card shadow-sm mx-auto" style="max-width: 800px">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h3 class="mb-0">{{ vehicle.reg_number }}</h3>
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+            <h3 class="mb-0">Reg #: {{ vehicle.reg_number }}</h3>
             <div>
-                <a href="{% url 'vehicle-edit' vehicle.pk %}" class="btn btn-sm btn-warning me-1">
+                <a href="{% url 'vehicle-edit' vehicle.pk %}" class="btn btn-sm btn-warning me-1 border">
                     <i class="bi bi-pencil-square"></i>
                 </a>
-                <a href="{% url 'vehicle-delete' vehicle.pk %}" class="btn btn-sm btn-danger me-1">
+                <a href="{% url 'vehicle-delete' vehicle.pk %}" class="btn btn-sm btn-danger me-1 border">
                     <i class="bi bi-trash"></i>
-                </a>
-                <a href="#" class="btn btn-sm btn-light" target="_blank">
-                    <i class="bi bi-link-45deg"></i>
                 </a>
             </div>
         </div>
@@ -45,37 +46,38 @@
         <div class="col-md-6">
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <h4>Maintenance Logs</h4>
-                <a href="#" class="btn btn-sm btn-success"> <i class="bi bi-plus-circle"></i> Add </a>
+                <a href="{% url 'vehicle-maintenance-add' vehicle_pk=vehicle.pk %}" class="btn btn-sm btn-success"> <i class="bi bi-plus-circle"></i> Add </a>
             </div>
             {% if vehicle.maintenance_logs.exists %}
-            <table class="table table-sm table-hover">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Type</th>
-                        <th>Mileage</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for log in vehicle.maintenance_logs.all|slice:":5" %}
-                    <tr>
-                        <td>{{ log.date }}</td>
-                        <td>{{ log.get_service_type_display }}</td>
-                        <td>{{ log.mileage }}</td>
-                        <td class="text-end">
-                            <a href="#" class="btn btn-sm btn-outline-warning me-1">
-                                <i class="bi bi-pencil"></i>
-                            </a>
-                            <a href="#" class="btn btn-sm btn-outline-danger">
-                                <i class="bi bi-trash"></i>
-                            </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            <a href="#" class="small">View all maintenance logs &rarr;</a>
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Mileage</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in vehicle.maintenance_logs.all %}
+                        <tr>
+                            <td>{{ log.date }}</td>
+                            <td>{{ log.get_service_type_display }}</td>
+                            <td>{{ log.mileage }}</td>
+                            <td class="text-end">
+                                <a href="/logs/maintenance/{{log.id}}/edit/" class="btn btn-sm btn-outline-warning me-1">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a href="/logs/maintenance/{{log.id}}/delete/" class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
             {% else %}
             <p class="text-muted">No maintenance records yet.</p>
             {% endif %}

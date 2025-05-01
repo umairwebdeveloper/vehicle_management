@@ -1,57 +1,62 @@
 from django.db import models
-from django.utils.text import slugify
-from vehicles.models import Vehicle
+from django.utils import timezone
 from django.contrib.auth.models import User
 
-class Thread(models.Model):
+CAT_CHOICES = [
+    ("maintenance", "Maintenance Help"),
+    ("diy", "DIY Repairs"),
+    ("buying", "Buying/Selling Advice"),
+    ("general", "General Discussion"),
+]
+
+
+class Post(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    cat = models.CharField(max_length=100, choices=CAT_CHOICES, default="general")
     title = models.CharField(max_length=200)
-    slug = models.SlugField(
-        max_length=220, unique=True, blank=True, help_text="Auto-generated from title."
+    body = models.TextField()
+    created = models.DateTimeField(default=timezone.now)
+    solved = models.BooleanField(default=False)
+    share_vehicle = models.BooleanField(
+        default=False,
+        help_text="Share my vehicle details on this post",
     )
-    creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="threads")
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        verbose_name = "Thread"
-        verbose_name_plural = "Threads"
-        ordering = ["-created_at"]
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            base = slugify(self.title)[:200]
-            self.slug = base
-        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.title
 
+    def reply_count(self):
+        return self.replies.count()
 
-class Post(models.Model):
-    thread = models.ForeignKey(Thread, on_delete=models.CASCADE, related_name="posts")
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="posts")
-    content = models.TextField()
-    share_vehicle = models.BooleanField(
-        default=False, help_text="Include your vehicle summary with this post."
-    )
-    vehicle = models.ForeignKey(
-        Vehicle,
+    def upvote_count(self):
+        return self.votes.filter(value=1).count()
+
+
+class Reply(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="replies")
+    parent = models.ForeignKey(
+        "self",
         null=True,
         blank=True,
-        on_delete=models.SET_NULL,
-        help_text="Vehicle to show if sharing is enabled.",
+        on_delete=models.CASCADE,
+        related_name="children",
+        help_text="Reply to another reply",
     )
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        verbose_name = "Post"
-        verbose_name_plural = "Posts"
-        ordering = ["created_at"]
-
-    def clean(self):
-        if self.share_vehicle and not self.vehicle:
-            from django.core.exceptions import ValidationError
-
-            raise ValidationError("Select a vehicle to share.")
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    body = models.TextField()
+    created = models.DateTimeField(default=timezone.now)
+    is_solution = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"Post by {self.author} on {self.thread.title}"
+        return f"Reply by {self.author} on {self.post}"
+
+
+class Vote(models.Model):
+    """Upvote only (you could extend to downvotes if you like)"""
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="votes")
+    value = models.SmallIntegerField(default=1)  # always +1 here
+
+    class Meta:
+        unique_together = ("user", "post")

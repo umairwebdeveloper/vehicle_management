@@ -1,22 +1,57 @@
-{% extends 'base.html' %} {% load widget_tweaks %} {% block title %}{% if form.instance.pk %}Edit{% else %}Add{% endif %} Maintenance{% endblock %} {% block content %}
-<div class="card mx-auto" style="max-width: 600px">
+{# templates/logs/maintenance_form.html #} {% extends "base.html" %} {% load widget_tweaks %} {% block title %} {% if view.object %}Edit Maintenance{% else %}Add Maintenance{% endif %} {% endblock %} {% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'vehicle-list' %}">Vehicles</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'vehicle-detail' vehicle.pk %}">Vehicle Detail</a></li>
+        {% if view.object %}
+        <li class="breadcrumb-item active" aria-current="page">Edit Maintenance</li>
+        {% else %}
+        <li class="breadcrumb-item active" aria-current="page">Create Maintenance</li>
+        {% endif %}
+    </ol>
+</nav>
+<div class="card mx-auto mt-4" style="max-width: 600px">
     <div class="card-body">
-        <h4 class="card-title mb-4">{% if form.instance.pk %}Edit{% else %}Add{% endif %} Maintenance Log</h4>
+        <h4 class="card-title mb-4">{% if view.object %}Edit Maintenance{% else %}Add Maintenance{% endif %}</h4>
         <form method="post">
-            {% csrf_token %} {% for field in form.visible_fields %}
+            {% csrf_token %} {# Vehicle: hidden on create, select on edit #}
             <div class="mb-3">
-                {{ field.label_tag }} {% render_field field class=field.field.widget.attrs.class %} {% if field.help_text %}
-                <div class="form-text">{{ field.help_text }}</div>
-                {% endif %} {% for err in field.errors %}
-                <div class="invalid-feedback d-block">{{ err }}</div>
-                {% endfor %}
+                {% if form.vehicle.is_hidden %} {{ form.vehicle }} {% else %}
+                <label for="{{ form.vehicle.id_for_label }}" class="form-label">Vehicle</label>
+                {{ form.vehicle|add_class:"form-select" }} {% endif %}
             </div>
-            {% endfor %}
-            <button type="submit" class="btn btn-success">
-                <i class="bi bi-save"></i>
-                {% if form.instance.pk %}Save Changes{% else %}Create Log{% endif %}
-            </button>
-            <a href="{% url 'maintenance-list' %}" class="btn btn-secondary ms-2">Cancel</a>
+
+            <div class="mb-3">
+                <label for="{{ form.date.id_for_label }}" class="form-label">Date</label>
+                {{ form.date|add_class:"form-control" }} {% if form.date.help_text %}
+                <div class="form-text">{{ form.date.help_text }}</div>
+                {% endif %}
+            </div>
+
+            <div class="mb-3">
+                <label for="{{ form.mileage.id_for_label }}" class="form-label">Mileage</label>
+                {{ form.mileage|add_class:"form-control" }} {% if form.mileage.help_text %}
+                <div class="form-text">{{ form.mileage.help_text }}</div>
+                {% endif %}
+            </div>
+
+            <div class="mb-3">
+                <label for="{{ form.service_type.id_for_label }}" class="form-label">Service Type</label>
+                {{ form.service_type|add_class:"form-select" }} {% if form.service_type.help_text %}
+                <div class="form-text">{{ form.service_type.help_text }}</div>
+                {% endif %}
+            </div>
+
+            <div class="mb-3">
+                <label for="{{ form.notes.id_for_label }}" class="form-label">Notes</label>
+                {{ form.notes|add_class:"form-control" }} {% if form.notes.help_text %}
+                <div class="form-text">{{ form.notes.help_text }}</div>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="btn btn-success"><i class="bi bi-save"></i> {% if view.object %}Save Changes{% else %}Create Maintenance{% endif %}</button>
+            <a href="{% url 'vehicle-detail' vehicle.pk %}" class="btn btn-secondary ms-2">Cancel</a>
         </form>
     </div>
 </div>

@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import ExpenseCreateView, ExpenseUpdateView, ExpenseDeleteView
+from .views import ExpenseCreateView, ExpenseUpdateView, ExpenseDeleteView, MaintenanceLogCreateView, MaintenanceLogUpdateView, MaintenanceLogDeleteView
 
 urlpatterns = [
     path(
@@ -16,5 +16,20 @@ urlpatterns = [
         "expense/<int:pk>/delete/",
         ExpenseDeleteView.as_view(),
         name="expense-delete",
+    ),
+    path(
+        "vehicles/<int:vehicle_pk>/maintenance/add/",
+        MaintenanceLogCreateView.as_view(),
+        name="vehicle-maintenance-add",
+    ),
+    path(
+        "maintenance/<int:pk>/edit/",
+        MaintenanceLogUpdateView.as_view(),
+        name="maintenance-edit",
+    ),
+    path(
+        "maintenance/<int:pk>/delete/",
+        MaintenanceLogDeleteView.as_view(),
+        name="maintenance-delete",
     ),
 ]

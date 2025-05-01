@@ -1,3 +1,102 @@
-{% extends 'base.html' %} {% load static %} {% block content %} {% load widget_tweaks %}
-sdf
+{% extends 'base.html' %} {% load static %} {% block title %}Dashboard | Analytics & Insights{% endblock %} {% block content %}
+<div class="container pb-4">
+    <h3 class="mb-4">Analytics &amp; Insights</h3>
+
+    <!-- Four Metric Widgets -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3 d-flex">
+            <div class="card flex-fill text-center p-3">
+                <i class="bi bi-car-front fs-1 mb-2"></i>
+                <h5>{{ vehicles_count }}</h5>
+                <p class="mb-0">Vehicles</p>
+            </div>
+        </div>
+        <div class="col-md-3 d-flex">
+            <div class="card flex-fill text-center p-3">
+                <i class="bi bi-currency-pound fs-1 mb-2"></i>
+                <h5>{{ expense_count }}</h5>
+                <p class="mb-0">Expenses Logged</p>
+            </div>
+        </div>
+        <div class="col-md-3 d-flex">
+            <div class="card flex-fill text-center p-3">
+                <i class="bi bi-wrench fs-1 mb-2"></i>
+                <h5>{{ maintenance_count }}</h5>
+                <p class="mb-0">Maintenance Records</p>
+            </div>
+        </div>
+        <div class="col-md-3 d-flex">
+            <div class="card flex-fill text-center p-3">
+                <i class="bi bi-list-check fs-1 mb-2"></i>
+                <h5>{{ category_count }}</h5>
+                <p class="mb-0">Categories Used</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row gy-4">
+        <!-- Total Spent Card -->
+        <div class="col-md-3 d-flex">
+            <div class="card text-center flex-fill h-100">
+                <div class="card-body d-flex flex-column justify-content-center">
+                    <h5 class="card-title">Total Spent</h5>
+                    <p class="display-6">£{{ total_spent }}</p>
+                </div>
+            </div>
+        </div>
+        <!-- Expense by Category Chart -->
+        <div class="col-md-3 d-flex">
+            <div class="card p-3 flex-fill h-100">
+                <h5>Expense by Category</h5>
+                <canvas id="expenseCategoryChart"></canvas>
+            </div>
+        </div>
+        <!-- Maintenance Frequency Chart -->
+        <div class="col-md-3 d-flex">
+            <div class="card p-3 flex-fill h-100">
+                <h5>Maintenance Frequency (Monthly)</h5>
+                <canvas id="maintenanceChart"></canvas>
+            </div>
+        </div>
+        <!-- Cost per Vehicle Chart -->
+        <div class="col-md-3 d-flex">
+            <div class="card p-3 flex-fill h-100">
+                <h5>Cost per Vehicle</h5>
+                <canvas id="vehicleCostChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctxCat = document.getElementById('expenseCategoryChart').getContext('2d');
+    new Chart(ctxCat, {
+      type: 'pie',
+      data: {
+        labels: {{ category_labels|safe }},
+        datasets: [{ data: {{ category_totals|safe }} }]
+      }
+    });
+
+    const ctxMaint = document.getElementById('maintenanceChart').getContext('2d');
+    new Chart(ctxMaint, {
+      type: 'bar',
+      data: {
+        labels: {{ maint_months|safe }},
+        datasets: [{ label: 'Maintenance', data: {{ maint_counts|safe }} }]
+      },
+      options: { scales: { y: { beginAtZero: true } } }
+    });
+
+    const ctxVeh = document.getElementById('vehicleCostChart').getContext('2d');
+    new Chart(ctxVeh, {
+      type: 'doughnut',
+      data: {
+        labels: {{ vehicle_labels|safe }},
+        datasets: [{ data: {{ vehicle_totals|safe }} }]
+      }
+    });
+</script>
 {% endblock %}
