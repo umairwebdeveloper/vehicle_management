@@ -36,16 +36,16 @@
 
     <div class="row gy-4">
         <!-- Total Spent Card -->
-        <div class="col-md-3 d-flex">
+        <div class="col-md-6 d-flex">
             <div class="card shadow-sm text-center flex-fill h-100">
                 <div class="card-body d-flex flex-column justify-content-center">
                     <h5 class="card-title">Total Spent</h5>
-                    <p class="display-6">£{{ total_spent }}</p>
+                    <p class="display-6">£{{ total_spent|floatformat:2 }}</p>
                 </div>
             </div>
         </div>
         <!-- Expense by Category Chart -->
-        <div class="col-md-3 d-flex">
+        <div class="col-md-6 d-flex">
             <div class="card shadow-sm p-3 flex-fill h-100">
                 <h5>Expense by Category</h5>
                 {% if category_labels %}
@@ -56,7 +56,7 @@
             </div>
         </div>
         <!-- Maintenance Frequency Chart -->
-        <div class="col-md-3 d-flex">
+        <div class="col-md-6 d-flex">
             <div class="card shadow-sm p-3 flex-fill h-100">
                 <h5>Maintenance Frequency (Monthly)</h5>
                 {% if maint_months %}
@@ -67,7 +67,7 @@
             </div>
         </div>
         <!-- Cost per Vehicle Chart -->
-        <div class="col-md-3 d-flex">
+        <div class="col-md-6 d-flex">
             <div class="card shadow-sm p-3 flex-fill h-100">
                 <h5>Cost per Vehicle</h5>
                 {% if vehicle_labels %}
@@ -115,7 +115,7 @@
 
 {# --- Charts for Posts --- #}
 <div class="row gy-4">
-    <div class="col-md-3 d-flex">
+    <div class="col-md-6 d-flex">
         <div class="card shadow-sm p-3 flex-fill h-100">
             <h5>Posts by Category</h5>
             {% if posts_cat_labels %}
@@ -125,7 +125,7 @@
             {% endif %}
         </div>
     </div>
-    <div class="col-md-3 d-flex">
+    <div class="col-md-6 d-flex">
         <div class="card shadow-sm p-3 flex-fill h-100">
             <h5>Posts Over Time</h5>
             {% if posts_months %}
