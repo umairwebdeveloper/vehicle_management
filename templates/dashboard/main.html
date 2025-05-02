@@ -5,28 +5,28 @@
     <!-- Four Metric Widgets -->
     <div class="row g-4 mb-4">
         <div class="col-md-3 d-flex">
-            <div class="card flex-fill text-center p-3">
+            <div class="card shadow-sm flex-fill text-center p-3">
                 <i class="bi bi-car-front fs-1 mb-2"></i>
                 <h5>{{ vehicles_count }}</h5>
                 <p class="mb-0">Vehicles</p>
             </div>
         </div>
         <div class="col-md-3 d-flex">
-            <div class="card flex-fill text-center p-3">
+            <div class="card shadow-sm flex-fill text-center p-3">
                 <i class="bi bi-currency-pound fs-1 mb-2"></i>
                 <h5>{{ expense_count }}</h5>
                 <p class="mb-0">Expenses Logged</p>
             </div>
         </div>
         <div class="col-md-3 d-flex">
-            <div class="card flex-fill text-center p-3">
+            <div class="card shadow-sm flex-fill text-center p-3">
                 <i class="bi bi-wrench fs-1 mb-2"></i>
                 <h5>{{ maintenance_count }}</h5>
                 <p class="mb-0">Maintenance Records</p>
             </div>
         </div>
         <div class="col-md-3 d-flex">
-            <div class="card flex-fill text-center p-3">
+            <div class="card shadow-sm flex-fill text-center p-3">
                 <i class="bi bi-list-check fs-1 mb-2"></i>
                 <h5>{{ category_count }}</h5>
                 <p class="mb-0">Categories Used</p>
@@ -37,7 +37,7 @@
     <div class="row gy-4">
         <!-- Total Spent Card -->
         <div class="col-md-3 d-flex">
-            <div class="card text-center flex-fill h-100">
+            <div class="card shadow-sm text-center flex-fill h-100">
                 <div class="card-body d-flex flex-column justify-content-center">
                     <h5 class="card-title">Total Spent</h5>
                     <p class="display-6">£{{ total_spent }}</p>
@@ -46,7 +46,7 @@
         </div>
         <!-- Expense by Category Chart -->
         <div class="col-md-3 d-flex">
-            <div class="card p-3 flex-fill h-100">
+            <div class="card shadow-sm p-3 flex-fill h-100">
                 <h5>Expense by Category</h5>
                 {% if category_labels %}
                 <canvas id="expenseCategoryChart"></canvas>
@@ -57,7 +57,7 @@
         </div>
         <!-- Maintenance Frequency Chart -->
         <div class="col-md-3 d-flex">
-            <div class="card p-3 flex-fill h-100">
+            <div class="card shadow-sm p-3 flex-fill h-100">
                 <h5>Maintenance Frequency (Monthly)</h5>
                 {% if maint_months %}
                 <canvas id="maintenanceChart"></canvas>
@@ -68,7 +68,7 @@
         </div>
         <!-- Cost per Vehicle Chart -->
         <div class="col-md-3 d-flex">
-            <div class="card p-3 flex-fill h-100">
+            <div class="card shadow-sm p-3 flex-fill h-100">
                 <h5>Cost per Vehicle</h5>
                 {% if vehicle_labels %}
                 <canvas id="vehicleCostChart"></canvas>
@@ -84,28 +84,28 @@
 {# --- Summary Cards for Posts --- #}
 <div class="row g-4 mb-4">
     <div class="col-md-3 d-flex">
-        <div class="card flex-fill text-center p-3">
+        <div class="card shadow-sm flex-fill text-center p-3">
             <i class="bi bi-stickies fs-1 mb-2"></i>
             <h5>{{ posts_count }}</h5>
             <p class="mb-0">My Posts</p>
         </div>
     </div>
     <div class="col-md-3 d-flex">
-        <div class="card flex-fill text-center p-3">
+        <div class="card shadow-sm flex-fill text-center p-3">
             <i class="bi bi-check-circle fs-1 mb-2"></i>
             <h5>{{ solved_posts_count }}</h5>
             <p class="mb-0">Solved Posts</p>
         </div>
     </div>
     <div class="col-md-3 d-flex">
-        <div class="card flex-fill text-center p-3">
+        <div class="card shadow-sm flex-fill text-center p-3">
             <i class="bi bi-x-circle fs-1 mb-2"></i>
             <h5>{{ unsolved_posts_count }}</h5>
             <p class="mb-0">Unsolved Posts</p>
         </div>
     </div>
     <div class="col-md-3 d-flex">
-        <div class="card flex-fill text-center p-3">
+        <div class="card shadow-sm flex-fill text-center p-3">
             <i class="bi bi-tags fs-1 mb-2"></i>
             <h5>{{ posts_cat_labels|length }}</h5>
             <p class="mb-0">Categories Used</p>
@@ -116,7 +116,7 @@
 {# --- Charts for Posts --- #}
 <div class="row gy-4">
     <div class="col-md-3 d-flex">
-        <div class="card p-3 flex-fill h-100">
+        <div class="card shadow-sm p-3 flex-fill h-100">
             <h5>Posts by Category</h5>
             {% if posts_cat_labels %}
             <canvas id="postsCategoryChart"></canvas>
@@ -126,7 +126,7 @@
         </div>
     </div>
     <div class="col-md-3 d-flex">
-        <div class="card p-3 flex-fill h-100">
+        <div class="card shadow-sm p-3 flex-fill h-100">
             <h5>Posts Over Time</h5>
             {% if posts_months %}
             <canvas id="postsTimeChart"></canvas>

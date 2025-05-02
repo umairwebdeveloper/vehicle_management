@@ -4,22 +4,28 @@
         <div>
             <strong>{{ reply.author.username }}</strong>
             {% if reply.author == request.user %}
-            <span class="badge bg-info ms-1">You</span>
+            <span class="badge bg-light text-dark border ms-1">You</span>
             {% endif %}
-            <small class="text-muted ms-2">{{ reply.created|date:"M d, Y H:i" }}</small>
+            <small class="text-muted ms-2">{{ reply.created|date:"M d, Y h:i A" }}</small>
         </div>
 
         {% if reply.author == request.user %}
         <div>
-            <button class="btn btn-link btn-sm reply-edit-btn" data-reply-id="{{ reply.pk }}" data-reply-body="{{ reply.body|escapejs }}">Edit</button>
-            <button class="btn btn-link btn-sm text-danger reply-delete-btn" data-reply-id="{{ reply.pk }}">Delete</button>
+            <button type="button" class="btn btn-link btn-sm text-secondary reply-edit-btn" data-reply-id="{{ reply.pk }}" data-reply-body="{{ reply.body|escapejs }}">
+                <i class="bi bi-pencil-fill"></i>
+            </button>
+            <button type="button" class="btn btn-link btn-sm text-secondary reply-delete-btn" data-reply-id="{{ reply.pk }}">
+                <i class="bi bi-trash-fill"></i>
+            </button>
         </div>
         {% endif %}
     </div>
 
     <p>{{ reply.body }}</p>
 
-    <button class="btn btn-link btn-sm reply-to-btn" data-reply-id="{{ reply.pk }}" data-reply-body="{{ reply.body|escapejs }}">Reply</button>
+    <button type="button" class="btn btn-link btn-sm reply-to-btn" data-reply-id="{{ reply.pk }}" data-reply-body="{{ reply.body|escapejs }}" title="Reply">
+        <i class="bi bi-reply-fill"></i> Reply
+    </button>
 
     {% if reply.children.all %}
     <div class="ms-4 border-start ps-3 mt-2">{% include "forum/_reply_item.html" with replies=reply.children.all %}</div>

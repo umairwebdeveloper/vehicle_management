@@ -24,8 +24,8 @@
                 {% endfor %}
             </div>
             {% endfor %}
-            <button type="submit" class="btn btn-success"><i class="bi bi-save"></i> {% if form.instance.pk %}Save Changes{% else %}Create Vehicle{% endif %}</button>
-            <a href="{% url 'vehicle-list' %}" class="btn btn-secondary ms-2">Cancel</a>
+            <button type="submit" class="btn btn-light border shadow-sm"><i class="bi bi-save"></i> {% if form.instance.pk %}Save Changes{% else %}Create Vehicle{% endif %}</button>
+            <a href="{% url 'vehicle-list' %}" class="btn btn-secondary shadow-sm ms-2"><i class="bi bi-x-circle"></i> Cancel</a>
         </form>
     </div>
 </div>

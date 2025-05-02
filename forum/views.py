@@ -13,6 +13,7 @@ from django.template.loader import render_to_string
 
 
 class PostListView(ListView):
+    login_url = "/auth/login/"
     model = Post
     paginate_by = 20
     template_name = "forum/post_list.html"
@@ -49,6 +50,7 @@ class PostListView(ListView):
 
 
 class MyPostsListView(LoginRequiredMixin, ListView):
+    login_url = "/auth/login/"
     model = Post
     paginate_by = 20
     template_name = "forum/my_post_list.html"  
@@ -86,6 +88,7 @@ class MyPostsListView(LoginRequiredMixin, ListView):
 
 
 class PostCreateView(LoginRequiredMixin, CreateView):
+    login_url = "/auth/login/"
     model = Post
     form_class = PostForm
     template_name = "forum/post_form.html"
@@ -102,6 +105,7 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 
 
 class PostUpdateView(LoginRequiredMixin, UpdateView):
+    login_url = "/auth/login/"
     model = Post
     form_class = PostForm
     template_name = "forum/post_form.html"

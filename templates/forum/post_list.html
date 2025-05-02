@@ -8,14 +8,14 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h3>Public Posts</h3>
     <div>
-        <a href="{% url 'forum:my_post' %}" class="btn btn-info me-2"> My Posts</a>
-        <a href="{% url 'forum:post_create' %}" class="btn btn-primary"> <i class="bi bi-plus-circle"></i> Create Post </a>
+        <a href="{% url 'forum:my_post' %}" class="btn btn-outline-secondary me-2"><i class="bi bi-box2"></i> My Posts</a>
+        <a href="{% url 'forum:post_create' %}" class="btn btn-light border shadow-sm"> <i class="bi bi-plus-circle"></i> Create Post </a>
     </div>
 </div>
 <div class="mb-5">
     <form method="get" class="row g-3 mb-4">
         <div class="col-md-5">
-            <input type="text" name="q" value="{{ request.GET.q }}" class="form-control" placeholder="Search…" />
+            <input type="search" name="q" value="{{ request.GET.q }}" class="form-control" placeholder="Search…" />
         </div>
         <div class="col-md-4">
             <select name="category" class="form-select">
@@ -28,7 +28,7 @@
             </select>
         </div>
         <div class="col-md-3">
-            <button type="submit" class="btn btn-success w-100">🔍 Filter</button>
+            <button type="submit" class="btn btn-light w-100"><i class="bi bi-search"></i> Filter</button>
         </div>
     </form>
 
@@ -37,16 +37,16 @@
         <div class="card-body">
         <div class="d-flex align-items-center gap-2 mb-2">
             <h5 class="card-title mb-0">
-            <a href="{{ post.get_absolute_url }}" class="text-decoration-none">
+            <p class="p-0 m-0">
                 {{ post.title }}
-            </a>
+            </p>
             </h5>
 
             {% if post.author == request.user %}
-            <span class="badge bg-info">You</span>
+            <span class="badge bg-light text-dark border">You</span>
             {% endif %}
             {% if post.solved %}
-            <span class="badge bg-success">Solved</span>
+            <span class="badge bg-light text-dark border">Solved</span>
             {% endif %}
         </div>
 
@@ -72,13 +72,13 @@
 
         <div class="d-flex justify-content-between align-items-center">
             <small class="text-muted">
-            By {{ post.author.username }} • {{ post.created|date:"M d, Y" }}
+            By {{ post.author.username }} • {{ post.created|date:"M d, Y h:i A" }}
             </small>
 
             <div class="d-flex align-items-center">
             <button
                 type="button"
-                class="btn btn-outline-secondary btn-sm reply-btn me-2"
+                class="btn btn-outline-secondary shadow-sm btn-sm reply-btn me-2"
                 data-post-id="{{ post.pk }}"
                 data-post-title="{{ post.title|escapejs }}"
             >
@@ -87,21 +87,26 @@
 
             <a
                 href="{% url 'forum:upvote' post.pk %}"
-                class="btn btn-sm me-2
+                class="btn shadow-sm btn-sm reply-btn me-2
                 {% if post.is_liked %}
-                    btn-primary
+                    btn-secondary
                 {% else %}
-                    btn-outline-primary
+                    btn-outline-secondary
                 {% endif %}"
             >
-                👍 {{ post.upvote_count }}
+                {% if post.is_liked %}
+                <i class="bi bi-hand-thumbs-up-fill"></i>
+                {% else %}
+                <i class="bi bi-hand-thumbs-up"></i>
+                {% endif %}
+                {{ post.upvote_count }}
             </a>
 
             {# — Edit button for author — #}
             {% if post.author == request.user %}
                 <a
                 href="{% url 'forum:post-edit' post.pk %}"
-                class="btn btn-outline-warning btn-sm"
+                class="btn btn-outline-secondary shadow-sm btn-sm reply-btn"
                 >
                 <i class="bi bi-pencil-square"></i> Edit
                 </a>

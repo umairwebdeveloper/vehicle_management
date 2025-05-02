@@ -26,7 +26,7 @@
 
         {% block extra_head %}{% endblock %}
     </head>
-    <body>
+    <body class="d-flex flex-column min-vh-100">
         {% if request.user.is_authenticated %} {% include 'partials/_navbar.html' %} {% endif %} {# Toast container (fixed top-right) #}
         <div aria-live="polite" aria-atomic="true" class="position-relative">
             <div class="toast-container position-fixed top-0 end-0 p-3">
@@ -51,6 +51,11 @@
             </div>
         </div>
         <main class="container py-4">{% block content %}{% endblock %}</main>
+        {% if request.user.is_authenticated %}
+        <footer class="bg-light text-center py-3 mt-auto">
+            <div class="container">&copy; {% now "Y" %} {{ COMPANY_NAME }}. All rights reserved.</div>
+        </footer>
+        {% endif %}
         <div id="toastContainer" class="position-fixed top-0 end-0 p-3" style="z-index: 1500; font-family: 'Roboto', sans-serif"></div>
         <!-- jQuery -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
