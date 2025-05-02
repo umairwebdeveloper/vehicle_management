@@ -16,7 +16,7 @@ from django.db.models import Sum, Count
 from django.db.models.functions import TruncMonth
 from logs.models import Expense, MaintenanceLog, ExpenseCategory
 from django.views.generic import TemplateView
-
+from forum.models import Post, CAT_CHOICES
 # from .snippets import fetch_vehicle_from_mot
 
 
@@ -67,6 +67,31 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         )
         context["vehicle_labels"] = [item["vehicle__reg_number"] for item in veh_exp_qs]
         context["vehicle_totals"] = [float(item["total"]) for item in veh_exp_qs]
+
+        posts = Post.objects.filter(author=user)
+        # Basic counts
+        context["posts_count"] = posts.count()
+        context["solved_posts_count"] = posts.filter(solved=True).count()
+        context["unsolved_posts_count"] = posts.filter(solved=False).count()
+
+        # Distribution by category
+        post_cat_qs = posts.values("cat").annotate(count=Count("id"))
+        context["posts_cat_labels"] = [
+            dict(CAT_CHOICES)[item["cat"]] for item in post_cat_qs
+        ]
+        context["posts_cat_counts"] = [item["count"] for item in post_cat_qs]
+
+        # Posts over time (monthly)
+        post_time_qs = (
+            posts.annotate(month=TruncMonth("created"))
+            .values("month")
+            .annotate(count=Count("id"))
+            .order_by("month")
+        )
+        context["posts_months"] = [
+            itm["month"].strftime("%b %Y") for itm in post_time_qs
+        ]
+        context["posts_month_counts"] = [itm["count"] for itm in post_time_qs]
 
         return context
 

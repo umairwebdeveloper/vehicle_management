@@ -1,6 +1,6 @@
 {% extends 'base.html' %} {% load static %} {% block title %}Dashboard | Analytics & Insights{% endblock %} {% block content %}
-<div class="container pb-4">
-    <h3 class="mb-4">Analytics &amp; Insights</h3>
+<div class="">
+    <h3 class="mb-4">Vehicle Analytics</h3>
 
     <!-- Four Metric Widgets -->
     <div class="row g-4 mb-4">
@@ -48,22 +48,91 @@
         <div class="col-md-3 d-flex">
             <div class="card p-3 flex-fill h-100">
                 <h5>Expense by Category</h5>
+                {% if category_labels %}
                 <canvas id="expenseCategoryChart"></canvas>
+                {% else %}
+                <p class="text-center text-muted">No expense-by-category data found.</p>
+                {% endif %}
             </div>
         </div>
         <!-- Maintenance Frequency Chart -->
         <div class="col-md-3 d-flex">
             <div class="card p-3 flex-fill h-100">
                 <h5>Maintenance Frequency (Monthly)</h5>
+                {% if maint_months %}
                 <canvas id="maintenanceChart"></canvas>
+                {% else %}
+                <p class="text-center text-muted">No maintenance data found.</p>
+                {% endif %}
             </div>
         </div>
         <!-- Cost per Vehicle Chart -->
         <div class="col-md-3 d-flex">
             <div class="card p-3 flex-fill h-100">
                 <h5>Cost per Vehicle</h5>
+                {% if vehicle_labels %}
                 <canvas id="vehicleCostChart"></canvas>
+                {% else %}
+                <p class="text-center text-muted">No per-vehicle expense data found.</p>
+                {% endif %}
             </div>
+        </div>
+    </div>
+</div>
+<h4 class="mt-5 mb-3">Posts Analytics</h4>
+
+{# --- Summary Cards for Posts --- #}
+<div class="row g-4 mb-4">
+    <div class="col-md-3 d-flex">
+        <div class="card flex-fill text-center p-3">
+            <i class="bi bi-stickies fs-1 mb-2"></i>
+            <h5>{{ posts_count }}</h5>
+            <p class="mb-0">My Posts</p>
+        </div>
+    </div>
+    <div class="col-md-3 d-flex">
+        <div class="card flex-fill text-center p-3">
+            <i class="bi bi-check-circle fs-1 mb-2"></i>
+            <h5>{{ solved_posts_count }}</h5>
+            <p class="mb-0">Solved Posts</p>
+        </div>
+    </div>
+    <div class="col-md-3 d-flex">
+        <div class="card flex-fill text-center p-3">
+            <i class="bi bi-x-circle fs-1 mb-2"></i>
+            <h5>{{ unsolved_posts_count }}</h5>
+            <p class="mb-0">Unsolved Posts</p>
+        </div>
+    </div>
+    <div class="col-md-3 d-flex">
+        <div class="card flex-fill text-center p-3">
+            <i class="bi bi-tags fs-1 mb-2"></i>
+            <h5>{{ posts_cat_labels|length }}</h5>
+            <p class="mb-0">Categories Used</p>
+        </div>
+    </div>
+</div>
+
+{# --- Charts for Posts --- #}
+<div class="row gy-4">
+    <div class="col-md-3 d-flex">
+        <div class="card p-3 flex-fill h-100">
+            <h5>Posts by Category</h5>
+            {% if posts_cat_labels %}
+            <canvas id="postsCategoryChart"></canvas>
+            {% else %}
+            <p class="text-center text-muted">No posts-by-category data found.</p>
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-md-3 d-flex">
+        <div class="card p-3 flex-fill h-100">
+            <h5>Posts Over Time</h5>
+            {% if posts_months %}
+            <canvas id="postsTimeChart"></canvas>
+            {% else %}
+            <p class="text-center text-muted">No posts-over-time data found.</p>
+            {% endif %}
         </div>
     </div>
 </div>
@@ -71,32 +140,81 @@
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    const ctxCat = document.getElementById('expenseCategoryChart').getContext('2d');
-    new Chart(ctxCat, {
-      type: 'pie',
-      data: {
-        labels: {{ category_labels|safe }},
-        datasets: [{ data: {{ category_totals|safe }} }]
+    // Expense by category
+    {% if category_labels %}
+    new Chart(
+      document.getElementById('expenseCategoryChart').getContext('2d'),
+      {
+        type: 'pie',
+        data: {
+          labels: {{ category_labels|safe }},
+          datasets: [{ data: {{ category_totals|safe }} }]
+        }
       }
-    });
+    );
+    {% endif %}
 
-    const ctxMaint = document.getElementById('maintenanceChart').getContext('2d');
-    new Chart(ctxMaint, {
-      type: 'bar',
-      data: {
-        labels: {{ maint_months|safe }},
-        datasets: [{ label: 'Maintenance', data: {{ maint_counts|safe }} }]
-      },
-      options: { scales: { y: { beginAtZero: true } } }
-    });
-
-    const ctxVeh = document.getElementById('vehicleCostChart').getContext('2d');
-    new Chart(ctxVeh, {
-      type: 'doughnut',
-      data: {
-        labels: {{ vehicle_labels|safe }},
-        datasets: [{ data: {{ vehicle_totals|safe }} }]
+    // Maintenance frequency
+    {% if maint_months %}
+    new Chart(
+      document.getElementById('maintenanceChart').getContext('2d'),
+      {
+        type: 'bar',
+        data: {
+          labels: {{ maint_months|safe }},
+          datasets: [{ label: 'Maintenance', data: {{ maint_counts|safe }} }]
+        },
+        options: { scales: { y: { beginAtZero: true } } }
       }
-    });
+    );
+    {% endif %}
+
+    // Cost per vehicle
+    {% if vehicle_labels %}
+    new Chart(
+      document.getElementById('vehicleCostChart').getContext('2d'),
+      {
+        type: 'doughnut',
+        data: {
+          labels: {{ vehicle_labels|safe }},
+          datasets: [{ data: {{ vehicle_totals|safe }} }]
+        }
+      }
+    );
+    {% endif %}
+
+    // Posts by category
+    {% if posts_cat_labels %}
+    new Chart(
+      document.getElementById('postsCategoryChart').getContext('2d'),
+      {
+        type: 'pie',
+        data: {
+          labels: {{ posts_cat_labels|safe }},
+          datasets: [{ data: {{ posts_cat_counts|safe }} }]
+        }
+      }
+    );
+    {% endif %}
+
+    // Posts over time
+    {% if posts_months %}
+    new Chart(
+      document.getElementById('postsTimeChart').getContext('2d'),
+      {
+        type: 'line',
+        data: {
+          labels: {{ posts_months|safe }},
+          datasets: [{
+            label: 'Posts',
+            data: {{ posts_month_counts|safe }},
+            fill: false,
+            tension: 0.1
+          }]
+        },
+        options: { scales: { y: { beginAtZero: true } } }
+      }
+    );
+    {% endif %}
 </script>
 {% endblock %}

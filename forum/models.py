@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
+from vehicles.models import Vehicle
 
 CAT_CHOICES = [
     ("maintenance", "Maintenance Help"),
@@ -12,6 +13,14 @@ CAT_CHOICES = [
 
 class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
+    vehicle = models.ForeignKey(
+        Vehicle,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="vehicle_post",
+        help_text="Vehicle related to this post",
+    )
     cat = models.CharField(max_length=100, choices=CAT_CHOICES, default="general")
     title = models.CharField(max_length=200)
     body = models.TextField()

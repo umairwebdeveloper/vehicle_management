@@ -15,7 +15,7 @@
                     <a class="nav-link {% if request.resolver_match.url_name == 'vehicle-list' %}active{% endif %}" href="{% url 'vehicle-list' %}"> Vehicles </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {% if request.resolver_match.url_name == 'vehicle-add' %}active{% endif %}" href="{% url 'vehicle-add' %}"> Add Vehicle </a>
+                    <a class="nav-link {% if request.resolver_match.url_name == 'post_list' %}active{% endif %}" href="{% url 'forum:post_list' %}"> Posts </a>
                 </li>
             </ul>
 

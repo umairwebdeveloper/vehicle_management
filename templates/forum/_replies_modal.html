@@ -1,0 +1,23 @@
+<div class="text-muted d-flex align-items-center m-0 p-0" id="replybody" style="display: none">
+    <span id="quote-text" class="flex-grow-1"></span>
+    <button type="button" class="btn-close btn-close-sm ms-2" style="display: none;" aria-label="Close" id="quote-clear"></button>
+</div>
+<form id="replyForm">
+    {% csrf_token %} {{ form.post }} {{ form.parent }}
+    <input type="hidden" id="id_reply_pk" name="reply_pk" value="">
+    <div class="mb-3">
+        {{ form.body.label_tag }} {{ form.body }}
+        <div id="reply-error-body" class="text-danger"></div>
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-sm">Send Reply</button>
+</form>
+
+<hr />
+
+{# Use the recursive include for **all** replies #}
+<div id="replyList">
+    {% if replies %} {% include "forum/_reply_item.html" with replies=replies %} {% else %}
+    <p class="text-muted">No replies yet.</p>
+    {% endif %}
+</div>

@@ -51,6 +51,7 @@
             </div>
         </div>
         <main class="container py-4">{% block content %}{% endblock %}</main>
+        <div id="toastContainer" class="position-fixed top-0 end-0 p-3" style="z-index: 1500; font-family: 'Roboto', sans-serif"></div>
         <!-- jQuery -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <!-- Bootstrap Bundle JS -->
@@ -63,6 +64,32 @@
                     new bootstrap.Toast(el, { delay: 4000 }).show()
                 })
             })
+            function showToast(message, type = "error") {
+                const toastId = "toast" + Date.now()
+                const bgClass = type === "success" ? "bg-success" : "bg-danger"
+                const iconHtml = type === "success" ? '<i class="fas fa-check-circle me-2"></i>' : '<i class="fas fa-exclamation-circle me-2"></i>'
+                const isMobile = window.matchMedia("(max-width: 576px)").matches
+                const toastHtml = `
+                <div id="${toastId}"
+                    class="toast align-items-center ${bgClass} text-light border-0 mb-2${isMobile ? " w-100" : ""}"
+                    role="alert"
+                    aria-live="assertive"
+                    aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                    ${iconHtml}${message}
+                    </div>
+                    <button type="button"
+                            class="btn-close btn-close-white me-2 m-auto"
+                            data-bs-dismiss="toast"
+                            aria-label="Close"></button>
+                </div>
+                </div>`
+                const $toast = $(toastHtml).appendTo("#toastContainer")
+                const bsToast = new bootstrap.Toast($toast[0], { delay: 2000 })
+                bsToast.show()
+                $toast.on("hidden.bs.toast", () => $toast.remove())
+            }
         </script>
         {% block scripts %}{% endblock %}
     </body>

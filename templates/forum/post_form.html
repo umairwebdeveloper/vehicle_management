@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block content %}
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'forum:post_list' %}">Posts</a></li>
+    {% if form.instance.pk %}
+      <li class="breadcrumb-item active" aria-current="page">Edit Post</li>
+    {% else %}
+      <li class="breadcrumb-item active" aria-current="page">Create Post</li>
+    {% endif %}
+  </ol>
+</nav>
+
+<div class="card mx-auto mt-4" style="max-width: 600px">
+  <div class="card-body">
+    <h4 class="mb-4 card-title">
+      {% if form.instance.pk %}Edit{% else %}Create{% endif %} Post
+    </h4>
+
+    <form method="post">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      
+      <!-- Vehicle -->
+      <div class="mb-3">
+        {{ form.vehicle.label_tag }}
+        {{ form.vehicle }}
+        {% for error in form.vehicle.errors %}
+          <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+        <div class="form-text">{{ form.vehicle.help_text }}</div>
+      </div>
+
+      <!-- Category -->
+      <div class="mb-3">
+        {{ form.cat.label_tag }}
+        {{ form.cat }}
+        {% for error in form.cat.errors %}
+          <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <!-- Title -->
+      <div class="mb-3">
+        {{ form.title.label_tag }}
+        {{ form.title }}
+        {% for error in form.title.errors %}
+          <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <!-- Body -->
+      <div class="mb-3">
+        {{ form.body.label_tag }}
+        {{ form.body }}
+        {% for error in form.body.errors %}
+          <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <!-- Share Vehicle -->
+      <div class="form-check mb-3">
+        {{ form.share_vehicle }}
+        {{ form.share_vehicle.label_tag }}
+        {% for error in form.share_vehicle.errors %}
+          <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <!-- Solved Post -->
+      <div class="form-check mb-3">
+        {{ form.solved }}
+        {{ form.solved.label_tag }}
+        {% for error in form.solved.errors %}
+          <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <button type="submit" class="btn btn-success">
+        {% if form.instance.pk %}Update{% else %}Create{% endif %} Post
+      </button>
+      <a href="{% url 'forum:post_list' %}" class="btn btn-secondary ms-2">Cancel</a>
+    </form>
+  </div>
+</div>
+{% endblock %}
