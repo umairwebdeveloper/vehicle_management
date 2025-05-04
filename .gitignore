@@ -3,3 +3,6 @@ db.sqlite3
 db.sqlite
 media
 .env
+
+*.pyc
+__pycache__
