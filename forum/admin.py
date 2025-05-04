@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Post, Reply, Vote
+from .models import Post, Reply, Vote, PostImage
 
 
 @admin.register(Post)
@@ -21,6 +21,12 @@ class PostAdmin(admin.ModelAdmin):
 
     unmark_as_solved.short_description = "Unmark selected posts as solved"
 
+@admin.register(PostImage)
+class PostImageAdmin(admin.ModelAdmin):
+    list_display = ("post", "image")
+    search_fields = ("post__title",)
+    raw_id_fields = ("post",)
+    list_filter = ("post__cat",)
 
 @admin.register(Reply)
 class ReplyAdmin(admin.ModelAdmin):

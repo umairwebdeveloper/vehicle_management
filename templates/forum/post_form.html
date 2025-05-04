@@ -1,84 +1,189 @@
-{% extends "base.html" %}
-{% block content %}
+{% extends "base.html" %} {% block content %}
+<style>
+    .existing-images .card-img-top {
+        height: 100px;
+        object-fit: cover;
+    }
+</style>
 <nav aria-label="breadcrumb">
-  <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
-    <li class="breadcrumb-item"><a href="{% url 'forum:post_list' %}">Posts</a></li>
-    {% if form.instance.pk %}
-      <li class="breadcrumb-item active" aria-current="page">Edit Post</li>
-    {% else %}
-      <li class="breadcrumb-item active" aria-current="page">Create Post</li>
-    {% endif %}
-  </ol>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'forum:post_list' %}">Posts</a></li>
+        {% if form.instance.pk %}
+        <li class="breadcrumb-item active" aria-current="page">Edit Post</li>
+        {% else %}
+        <li class="breadcrumb-item active" aria-current="page">Create Post</li>
+        {% endif %}
+    </ol>
 </nav>
 
 <div class="card mx-auto mt-4" style="max-width: 600px">
-  <div class="card-body">
-    <h4 class="mb-4 card-title">
-      {% if form.instance.pk %}Edit{% else %}Create{% endif %} Post
-    </h4>
+    <div class="card-body">
+        <h4 class="mb-4 card-title">{% if form.instance.pk %}Edit{% else %}Create{% endif %} Post</h4>
 
-    <form method="post">
-      {% csrf_token %}
-      {{ form.non_field_errors }}
-      
-      <!-- Vehicle -->
-      <div class="mb-3">
-        {{ form.vehicle.label_tag }}
-        {{ form.vehicle }}
-        {% for error in form.vehicle.errors %}
-          <div class="text-danger">{{ error }}</div>
-        {% endfor %}
-        <div class="form-text">{{ form.vehicle.help_text }}</div>
-      </div>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %} {{ form.non_field_errors }}
 
-      <!-- Category -->
-      <div class="mb-3">
-        {{ form.cat.label_tag }}
-        {{ form.cat }}
-        {% for error in form.cat.errors %}
-          <div class="text-danger">{{ error }}</div>
-        {% endfor %}
-      </div>
+            <!-- Vehicle -->
+            <div class="mb-3">
+                {{ form.vehicle.label_tag }} {{ form.vehicle }} {% for error in form.vehicle.errors %}
+                <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+                <div class="form-text">{{ form.vehicle.help_text }}</div>
+            </div>
 
-      <!-- Title -->
-      <div class="mb-3">
-        {{ form.title.label_tag }}
-        {{ form.title }}
-        {% for error in form.title.errors %}
-          <div class="text-danger">{{ error }}</div>
-        {% endfor %}
-      </div>
+            <!-- Category -->
+            <div class="mb-3">
+                {{ form.cat.label_tag }} {{ form.cat }} {% for error in form.cat.errors %}
+                <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
 
-      <!-- Body -->
-      <div class="mb-3">
-        {{ form.body.label_tag }}
-        {{ form.body }}
-        {% for error in form.body.errors %}
-          <div class="text-danger">{{ error }}</div>
-        {% endfor %}
-      </div>
+            <!-- Title -->
+            <div class="mb-3">
+                {{ form.title.label_tag }} {{ form.title }} {% for error in form.title.errors %}
+                <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
 
-      <!-- Share Vehicle -->
-      <div class="form-check">
-        {{ form.share_vehicle }}
-        {{ form.share_vehicle.label_tag }}
-        {% for error in form.share_vehicle.errors %}
-          <div class="text-danger">{{ error }}</div>
-        {% endfor %}
-      </div>
+            <!-- Body -->
+            <div class="mb-3">
+                {{ form.body.label_tag }} {{ form.body }} {% for error in form.body.errors %}
+                <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
 
-      <!-- Solved Post -->
-      <div class="form-check mb-3">
-        {{ form.solved }}
-        {{ form.solved.label_tag }}
-        {% for error in form.solved.errors %}
-          <div class="text-danger">{{ error }}</div>
-        {% endfor %}
-      </div>
-      <button type="submit" class="btn btn-light border shadow-sm"><i class="bi bi-save"></i> {% if form.instance.pk %}Save Changes{% else %}Create Vehicle{% endif %}</button>
-      <a href="{% url 'forum:post_list' %}" class="btn btn-secondary shadow-sm ms-2"><i class="bi bi-x-circle"></i> Cancel</a>
-    </form>
-  </div>
+            <!-- Images -->
+            <div class="mb-3">
+                {{ form.images.label_tag }} {{ form.images }} {% for err in form.images.errors %}
+                <div class="invalid-feedback d-block">{{ err }}</div>
+                {% endfor %}
+                <div class="form-text">{{ form.images.help_text }}</div>
+                <div class="form-text text-muted"><span id="image-counter">0</span>/5 images selected (max 5MB each)</div>
+            </div>
+
+            <!-- Existing Images -->
+            <div class="mb-3 existing-images">
+                <label class="form-label">Existing Images</label>
+                <div class="row">
+                    {% for image in existing_images %}
+                    <div class="col-md-3 mb-3 image-container" data-image-id="{{ image.id }}">
+                        <div class="card h-100">
+                            <a href="{{ image.image.url }}" class="glightbox" data-gallery="post-gallery">
+                                <img src="{{ image.image.url }}" class="card-img-top" alt="Post image" />
+                            </a>
+                            <div class="card-body p-2 text-center">
+                                <button class="btn btn-sm btn-outline-secondary shadow-sm delete-image" type="button"><i class="bi bi-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Share Vehicle -->
+            <div class="form-check">
+                {{ form.share_vehicle }} {{ form.share_vehicle.label_tag }} {% for error in form.share_vehicle.errors %}
+                <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <!-- Solved Post -->
+            <div class="form-check">
+                {{ form.solved }} {{ form.solved.label_tag }} {% for error in form.solved.errors %}
+                <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <!-- Sold Post -->
+            <div class="form-check mb-3">
+                {{ form.sold }} {{ form.sold.label_tag }} {% for error in form.sold.errors %}
+                <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <button type="submit" class="btn btn-light border shadow-sm"><i class="bi bi-save"></i> {% if form.instance.pk %}Save Changes{% else %}Create Post{% endif %}</button>
+            <a href="{% url 'forum:post_list' %}" class="btn btn-secondary shadow-sm ms-2"><i class="bi bi-x-circle"></i> Cancel</a>
+        </form>
+    </div>
 </div>
+{% endblock %} {% block scripts %}
+<script>
+    $(document).ready(function () {
+        // Delete image via AJAX
+        $(".delete-image").click(function () {
+            var imageContainer = $(this).closest(".image-container")
+            var imageId = imageContainer.data("image-id")
+            var csrfToken = $("[name=csrfmiddlewaretoken]").val()
+
+            if (confirm("Are you sure you want to delete this image?")) {
+                $.ajax({
+                    url: '{% url "forum:delete_post_image" %}',
+                    method: "POST",
+                    data: {
+                        image_id: imageId,
+                        csrfmiddlewaretoken: csrfToken,
+                    },
+                    headers: {
+                        "X-CSRFToken": "{{ csrfToken }}",
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            imageContainer.remove()
+                            if ($(".image-container").length === 0) {
+                                $(".existing-images").hide()
+                            }
+                            showToast("Image deleted successfully.", "success")
+                        } else {
+                            showToast("Error: " + response.error)
+                        }
+                    },
+                    error: function () {
+                        showToast("An error occurred while deleting the image.")
+                    },
+                })
+            }
+        })
+
+        if ($(".image-container").length === 0) {
+            $(".existing-images").hide()
+        }
+
+        $('input[type="file"][name="images"]').change(function() {
+        const files = this.files;
+        let totalSize = 0;
+        let validFiles = [];
+
+        // Check number of files
+        const existingCount = {{ existing_images|length|default:0 }};
+        const remainingSlots = Math.max(0, 5 - existingCount);
+
+        if (files.length > remainingSlots) {
+            showToast(`You can only upload ${remainingSlots} more images (max 5 per post).`);
+            this.value = '';
+            $('#image-counter').text('0');
+            return;
+        }
+
+        // Check each file size and type
+        for (let i = 0; i < files.length; i++) {
+            if (files[i].size > 5 * 1024 * 1024) {
+                showToast(`"${files[i].name}" is too large (max 5MB)`);
+                this.value = '';
+                $('#image-counter').text('0');
+                return;
+            }
+            totalSize += files[i].size;
+            validFiles.push(files[i]);
+        }
+
+        // Update counter
+        $('#image-counter').text(files.length);
+
+        // Warn if total size is large
+        if (totalSize > 15 * 1024 * 1024) {
+            showToast('Warning: You are uploading a large amount of data.');
+        }
+    });
+    })
+</script>
 {% endblock %}

@@ -6,10 +6,11 @@ from django.utils import timezone
 from .forms import PostForm, ReplyForm
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Post, Reply, Vote, CAT_CHOICES
+from .models import Post, PostImage, Reply, Vote, CAT_CHOICES
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.template.loader import render_to_string
+from django.views.decorators.http import require_POST
 
 
 class PostListView(ListView):
@@ -53,7 +54,7 @@ class MyPostsListView(LoginRequiredMixin, ListView):
     login_url = "/auth/login/"
     model = Post
     paginate_by = 20
-    template_name = "forum/my_post_list.html"  
+    template_name = "forum/my_post_list.html"
     context_object_name = "posts"
 
     def get_queryset(self):
@@ -101,7 +102,41 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.author = self.request.user
+        self.object = form.save()
+
+        images = self.request.FILES.getlist("images")
+        remaining_slots = 5
+
+        for img in images[:remaining_slots]:
+            PostImage.objects.create(post=self.object, image=img)
+
         return super().form_valid(form)
+
+
+# @login_required(login_url="/auth/login/")
+# def post_create(request):
+#     if request.method == "POST":
+#         form = PostForm(request.POST, request.FILES, user=request.user)
+#         if form.is_valid():
+#             post = form.save(commit=False)
+#             post.author = request.user
+#             post.save()
+
+#             for img in request.FILES.getlist("images")[:5]:
+#                 PostImage.objects.create(post=post, image=img)
+
+#             return redirect(reverse_lazy("forum:post_list"))
+#     else:
+#         form = PostForm(user=request.user)
+
+#     return render(
+#         request,
+#         "forum/post_form.html",
+#         {
+#             "form": form,
+#             "is_edit": False,
+#         },
+#     )
 
 
 class PostUpdateView(LoginRequiredMixin, UpdateView):
@@ -118,6 +153,20 @@ class PostUpdateView(LoginRequiredMixin, UpdateView):
         kwargs = super().get_form_kwargs()
         kwargs["user"] = self.request.user
         return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["existing_images"] = self.object.images.all()
+        return context
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        existing_count = self.object.images.count()
+        remaining_slots = max(0, 5 - existing_count)
+        images = self.request.FILES.getlist("images")
+        for img in images[:remaining_slots]:
+            PostImage.objects.create(post=self.object, image=img)
+        return response
 
 
 @login_required
@@ -174,4 +223,26 @@ def reply_create(request):
 def reply_delete(request, pk):
     reply = get_object_or_404(Reply, pk=pk, author=request.user)
     reply.delete()
+    return JsonResponse({"success": True})
+
+
+@login_required
+@require_POST
+def delete_post_image(request):
+    image_id = request.POST.get("image_id")
+    try:
+        image = PostImage.objects.get(id=image_id, post__author=request.user)
+        image.image.delete(save=False)
+        image.delete()
+        return JsonResponse({"success": True})
+    except PostImage.DoesNotExist:
+        return JsonResponse({"success": False, "error": "Image not found"}, status=404)
+
+
+@require_POST
+@login_required
+def delete_post(request):
+    post_id = request.POST.get("post_id")
+    post = get_object_or_404(Post, pk=post_id, author=request.user)
+    post.delete()
     return JsonResponse({"success": True})

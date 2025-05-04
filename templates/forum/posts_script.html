@@ -97,5 +97,75 @@
                     })
                 })
         }
+
+        $(".delete-post-btn").on("click", function () {
+            const $btn = $(this)
+            const postId = $btn.data("post-id")
+            const csrf = $("[name=csrfmiddlewaretoken]").val()
+
+            if (!confirm("Really delete this post?")) return
+
+            $.ajax({
+                url: '{% url "forum:delete_post" %}',
+                method: "POST",
+                data: {
+                    post_id: postId,
+                    csrfmiddlewaretoken: csrf,
+                },
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}",
+                },
+                success(response) {
+                    if (response.success) {
+                        // remove the card
+                        $("#post-card-" + postId).fadeOut(200, function () {
+                            $(this).remove()
+                        })
+                        showToast("Post deleted successfully.", "success")
+                    } else {
+                        showToast("Error: " + (response.error || "Could not delete."))
+                    }
+                },
+                error() {
+                    showToast("Server error when deleting post.")
+                },
+            })
+        })
+
+        $(".delete-post-image").on("click", function () {
+            const $btn = $(this)
+            const imgId = $btn.data("image-id")
+            const csrf = $("[name=csrfmiddlewaretoken]").val()
+
+            if (!confirm("Really delete this image?")) return
+
+            $.ajax({
+                url: '{% url "forum:delete_post_image" %}',
+                method: "POST",
+                data: {
+                    image_id: imgId,
+                    csrfmiddlewaretoken: csrf,
+                },
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}",
+                },
+                success(response) {
+                    if (response.success) {
+                        $btn.closest(".col-md-3").fadeOut(200, function () {
+                            $(this).remove()
+                        })
+                        if ($(".post-image-card-holder").length === 0) {
+                            $(".post-images").hide()
+                        }
+                        showToast("Image deleted successfully.", "success")
+                    } else {
+                        showToast("Error: " + (response.error || "Could not delete."))
+                    }
+                },
+                error() {
+                    showToast("Server error when deleting image.")
+                },
+            })
+        })
     })
 </script>

@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from .validation import *
-
+from .models import Profile
 
 class SignUpForm(forms.ModelForm):
     password1 = forms.CharField(label="Password", widget = forms.PasswordInput)
@@ -47,7 +47,7 @@ class ChangePasswordForm(forms.Form):
     password2 = forms.CharField(label="Confirm Password", widget=forms.PasswordInput)
 
 
-class UserProfileForm(forms.ModelForm):
+class UserUpdateForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ["first_name", "last_name", "username", "email"]
@@ -57,3 +57,20 @@ class UserProfileForm(forms.ModelForm):
             "username": forms.TextInput(attrs={"class": "form-control"}),
             "email": forms.EmailInput(attrs={"class": "form-control"}),
         }
+
+
+class ProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ["image", "bio"]  
+        widgets = {
+            "bio": forms.Textarea(attrs={"class": "form-control", "rows": 3}),
+        }
+
+    def clean_image(self):
+        image = self.cleaned_data.get("image")
+        if image:
+            max_size = 5 * 1024 * 1024
+            if image.size > max_size:
+                raise forms.ValidationError("Image file too large ( > 5 MB ).")
+        return image
