@@ -44,6 +44,13 @@
             </div>
 
             <div class="mb-3">
+                <label for="{{ form.amount.id_for_label }}" class="form-label">Amount (£)</label>
+                {{ form.amount|add_class:"form-control" }} {% if form.amount.help_text %}
+                <div class="form-text">{{ form.amount.help_text }}</div>
+                {% endif %}
+            </div>
+
+            <div class="mb-3">
                 <label for="{{ form.notes.id_for_label }}" class="form-label">Notes</label>
                 {{ form.notes|add_class:"form-control" }} {% if form.notes.help_text %}
                 <div class="form-text">{{ form.notes.help_text }}</div>

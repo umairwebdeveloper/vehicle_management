@@ -28,10 +28,10 @@
 
                 <dt class="col-sm-4">Model</dt>
                 <dd class="col-sm-8">{{ vehicle.model }}</dd>
-
                 <dt class="col-sm-4">Year</dt>
                 <dd class="col-sm-8">{{ vehicle.year }}</dd>
-
+                <dt class="col-sm-4">Mileage</dt>
+                <dd class="col-sm-8">{{ vehicle.milage }}</dd>
                 {% if vehicle.vin %}
                 <dt class="col-sm-4">VIN</dt>
                 <dd class="col-sm-8 text-monospace">{{ vehicle.vin }}</dd>
@@ -56,6 +56,7 @@
                             <th>Date</th>
                             <th>Type</th>
                             <th>Mileage</th>
+                            <th class="text-end">Amount</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -65,6 +66,7 @@
                             <td>{{ log.date }}</td>
                             <td>{{ log.get_service_type_display }}</td>
                             <td>{{ log.mileage }}</td>
+                            <td class="text-end">£{{ log.amount }}</td>
                             <td class="text-end">
                                 <a href="/logs/maintenance/{{log.id}}/edit/" class="btn btn-sm shadow-sm btn-outline-secondary">
                                     <i class="bi bi-pencil"></i>

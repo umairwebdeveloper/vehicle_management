@@ -35,6 +35,12 @@ class Vehicle(models.Model):
         null=True,
         help_text="17-character Vehicle Identification Number.",
     )
+    milage = models.PositiveIntegerField(
+        "Mileage",
+        blank=True,
+        null=True,
+        help_text="Current Mileage",
+    )
     photo = models.ImageField(
         "Photo",
         upload_to="vehicles/photos/%Y/%m/",

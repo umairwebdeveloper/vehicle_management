@@ -17,6 +17,7 @@
                 <th>Make</th>
                 <th>Model</th>
                 <th>Year</th>
+                <th>Created</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -27,6 +28,7 @@
                 <td>{{ vehicle.make }}</td>
                 <td>{{ vehicle.model }}</td>
                 <td>{{ vehicle.year }}</td>
+                <td>{{ vehicle.added_at }}</td>
                 <td>
                     <a href="{% url 'vehicle-detail' vehicle.pk %}" class="btn btn-sm shadow-sm btn-outline-secondary">
                         <i class="bi bi-eye"></i>

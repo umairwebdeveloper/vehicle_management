@@ -1,4 +1,30 @@
-{% extends 'base.html' %} {% load static %} {% block title %}Dashboard | Analytics & Insights{% endblock %} {% block content %}
+{% extends 'base.html' %} {% load static %} {% block title %}Dashboard | Analytics & Insights{% endblock %} {% block extra_head %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+{% endblock %} {% block content %}
+<div class="mb-4">
+    <form method="get" class="row g-3 align-items-end">
+        <div class="col-auto">
+            <label for="date_range" class="form-label">Date Range</label>
+            <input type="text" id="date_range" class="form-control" readonly />
+            <!-- hidden fields to submit -->
+            <input type="hidden" id="start_date" name="start_date" {% if start_date %} value="{{ start_date }}" {% endif %} />
+            <input type="hidden" id="end_date" name="end_date" {% if end_date %} value="{{ end_date }}" {% endif %} />
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-light border shadow-sm">
+                <i class="bi bi-calendar-check me-1"></i>
+                Apply
+            </button>
+        </div>
+        <div class="col-auto">
+            <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+                <i class="bi bi-clock-history me-1"></i>
+                All Time
+            </a>
+        </div>
+    </form>
+</div>
 <div class="">
     <h3 class="mb-4">Vehicle Analytics</h3>
 
@@ -36,7 +62,7 @@
 
     <div class="row gy-4">
         <!-- Total Spent Card -->
-        <div class="col-md-6 d-flex">
+        <div class="col-md-4 d-flex">
             <div class="card shadow-sm text-center flex-fill h-100">
                 <div class="card-body d-flex flex-column justify-content-center">
                     <h5 class="card-title">Total Spent</h5>
@@ -45,7 +71,7 @@
             </div>
         </div>
         <!-- Expense by Category Chart -->
-        <div class="col-md-6 d-flex">
+        <div class="col-md-4 d-flex">
             <div class="card shadow-sm p-3 flex-fill h-100">
                 <h5>Expense by Category</h5>
                 {% if category_labels %}
@@ -56,7 +82,7 @@
             </div>
         </div>
         <!-- Maintenance Frequency Chart -->
-        <div class="col-md-6 d-flex">
+        <div class="col-md-4 d-flex">
             <div class="card shadow-sm p-3 flex-fill h-100">
                 <h5>Maintenance Frequency (Monthly)</h5>
                 {% if maint_months %}
@@ -74,6 +100,16 @@
                 <canvas id="vehicleCostChart"></canvas>
                 {% else %}
                 <p class="text-center text-muted">No per-vehicle expense data found.</p>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-6 d-flex">
+            <div class="card shadow-sm p-3 flex-fill h-100">
+                <h5>Vehicles Added Over Time</h5>
+                {% if vehicles_months %}
+                <canvas id="vehiclesTimeChart"></canvas>
+                {% else %}
+                <p class="text-center text-muted">No vehicle-addition data found.</p>
                 {% endif %}
             </div>
         </div>
@@ -140,81 +176,190 @@
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Expense by category
-    {% if category_labels %}
+        // Vehicles over time
+    {% if vehicles_months %}
     new Chart(
-      document.getElementById('expenseCategoryChart').getContext('2d'),
-      {
-        type: 'pie',
-        data: {
-          labels: {{ category_labels|safe }},
-          datasets: [{ data: {{ category_totals|safe }} }]
-        }
-      }
-    );
-    {% endif %}
-
-    // Maintenance frequency
-    {% if maint_months %}
-    new Chart(
-      document.getElementById('maintenanceChart').getContext('2d'),
-      {
-        type: 'bar',
-        data: {
-          labels: {{ maint_months|safe }},
-          datasets: [{ label: 'Maintenance', data: {{ maint_counts|safe }} }]
-        },
-        options: { scales: { y: { beginAtZero: true } } }
-      }
-    );
-    {% endif %}
-
-    // Cost per vehicle
-    {% if vehicle_labels %}
-    new Chart(
-      document.getElementById('vehicleCostChart').getContext('2d'),
-      {
-        type: 'doughnut',
-        data: {
-          labels: {{ vehicle_labels|safe }},
-          datasets: [{ data: {{ vehicle_totals|safe }} }]
-        }
-      }
-    );
-    {% endif %}
-
-    // Posts by category
-    {% if posts_cat_labels %}
-    new Chart(
-      document.getElementById('postsCategoryChart').getContext('2d'),
-      {
-        type: 'pie',
-        data: {
-          labels: {{ posts_cat_labels|safe }},
-          datasets: [{ data: {{ posts_cat_counts|safe }} }]
-        }
-      }
-    );
-    {% endif %}
-
-    // Posts over time
-    {% if posts_months %}
-    new Chart(
-      document.getElementById('postsTimeChart').getContext('2d'),
+      document.getElementById('vehiclesTimeChart').getContext('2d'),
       {
         type: 'line',
         data: {
-          labels: {{ posts_months|safe }},
+          labels: {{ vehicles_months|safe }},
           datasets: [{
-            label: 'Posts',
-            data: {{ posts_month_counts|safe }},
+            label: 'Vehicles Added',
+            data: {{ vehicles_month_counts|safe }},
             fill: false,
             tension: 0.1
           }]
         },
-        options: { scales: { y: { beginAtZero: true } } }
+        options: {
+          scales: {
+            y: { beginAtZero: true }
+          }
+        }
       }
     );
     {% endif %}
+
+            // Expense by category
+            {% if category_labels %}
+             new Chart(
+          document.getElementById('expenseCategoryChart').getContext('2d'),
+          {
+            type: 'pie',
+            data: {
+              labels: {{ category_labels|safe }},
+              datasets: [{ data: {{ category_totals|safe }} }]
+            },
+            options: {
+              plugins: {
+                tooltip: {
+                  callbacks: {
+                    label: function(context) {
+                      let label = context.label || '';
+                      let value = context.parsed;
+                      let formatted = new Intl.NumberFormat('de-DE', {
+                        style: 'currency',
+                        currency: 'EUR',
+                        minimumFractionDigits: 2
+                      }).format(value);
+                      return label + ': ' + formatted;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        );
+            {% endif %}
+
+            // Maintenance frequency
+            {% if maint_months %}
+            new Chart(
+              document.getElementById('maintenanceChart').getContext('2d'),
+              {
+                type: 'bar',
+                data: {
+                  labels: {{ maint_months|safe }},
+                  datasets: [{ label: 'Maintenance', data: {{ maint_counts|safe }} }]
+                },
+                options: { scales: { y: { beginAtZero: true } } }
+              }
+            );
+            {% endif %}
+
+            // Cost per vehicle
+           {% if vehicle_labels %}
+          new Chart(
+            document.getElementById('vehicleCostChart').getContext('2d'),
+            {
+              type: 'doughnut',
+              data: {
+                labels: {{ vehicle_labels|safe }},
+                datasets: [{ data: {{ vehicle_totals|safe }} }]
+              },
+              options: {
+                plugins: {
+                  tooltip: {
+                    callbacks: {
+                      label: function(context) {
+                        // context.label is the segment label
+                        // context.parsed is the numeric value for pie/doughnut in Chart.js v3+
+                        let label = context.label || '';
+                        let value = context.parsed;
+                        // format as Euro currency
+                        let formatted = new Intl.NumberFormat('de-DE', {
+                          style: 'currency',
+                          currency: 'EUR',
+                          minimumFractionDigits: 2
+                        }).format(value);
+                        return label + ': ' + formatted;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          );
+          {% endif %}
+
+            // Posts by category
+            {% if posts_cat_labels %}
+            new Chart(
+              document.getElementById('postsCategoryChart').getContext('2d'),
+              {
+                type: 'pie',
+                data: {
+                  labels: {{ posts_cat_labels|safe }},
+                  datasets: [{ data: {{ posts_cat_counts|safe }} }]
+                }
+              }
+            );
+            {% endif %}
+
+            // Posts over time
+            {% if posts_months %}
+            new Chart(
+              document.getElementById('postsTimeChart').getContext('2d'),
+              {
+                type: 'line',
+                data: {
+                  labels: {{ posts_months|safe }},
+                  datasets: [{
+                    label: 'Posts',
+                    data: {{ posts_month_counts|safe }},
+                    fill: false,
+                    tension: 0.1
+                  }]
+                },
+                options: { scales: { y: { beginAtZero: true } } }
+              }
+            );
+            {% endif %}
+</script>
+{% endblock %} {% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/min/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/daterangepicker@3.1/daterangepicker.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // initialize start/end: if none, default to last 30 days
+      {% if start_date %}
+        const start = moment("{{ start_date }}", "YYYY-MM-DD");
+      {% else %}
+        const start = moment().subtract(29, 'days');
+      {% endif %}
+
+      {% if end_date %}
+        const end = moment("{{ end_date }}", "YYYY-MM-DD");
+      {% else %}
+        const end = moment();
+      {% endif %}
+
+      function pickerCallback(s, e) {
+        // set text & hidden inputs all in YYYY-MM-DD
+        const sFmt = s.format('YYYY-MM-DD'),
+              eFmt = e.format('YYYY-MM-DD');
+        document.getElementById('date_range').value = `${sFmt} – ${eFmt}`;
+        document.getElementById('start_date').value = sFmt;
+        document.getElementById('end_date').value = eFmt;
+      }
+
+      $('#date_range').daterangepicker({
+        startDate: start,
+        endDate:   end,
+        opens:     'right',
+        locale:    { format: 'YYYY-MM-DD' },
+        ranges: {
+          'Today':        [moment(), moment()],
+          'Last 7 Days':  [moment().subtract(6, 'days'), moment()],
+          'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+          'This Month':   [moment().startOf('month'), moment().endOf('month')],
+          'All Time':     [moment('2000-01-01'), moment()]  // adjust as you like
+        }
+      }, pickerCallback);
+
+      // prime the field on load
+      pickerCallback(start, end);
+    });
 </script>
 {% endblock %}

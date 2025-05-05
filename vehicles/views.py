@@ -17,6 +17,8 @@ from django.db.models.functions import TruncMonth
 from logs.models import Expense, MaintenanceLog, ExpenseCategory
 from django.views.generic import TemplateView
 from forum.models import Post, CAT_CHOICES
+from datetime import datetime
+
 # from .snippets import fetch_vehicle_from_mot
 
 
@@ -26,13 +28,51 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         user = self.request.user
+        # Read raw date params
+        start_str = self.request.GET.get("start_date")
+        end_str = self.request.GET.get("end_date")
+
+        # Parse dates if provided
+        start_date = None
+        end_date = None
+        try:
+            if start_str:
+                start_date = datetime.strptime(start_str, "%Y-%m-%d").date()
+        except ValueError:
+            start_date = None
+        try:
+            if end_str:
+                end_date = datetime.strptime(end_str, "%Y-%m-%d").date()
+        except ValueError:
+            end_date = None
+
+        vehicle_filters = {"owner": user}
+        expense_filters = {"vehicle__owner": user}
+        maintenance_filters = {"vehicle__owner": user}
+        post_filters = {"author": user}
+
+        if start_date:
+            vehicle_filters["added_at__date__gte"] = start_date
+            expense_filters["date__gte"] = start_date
+            maintenance_filters["date__gte"] = start_date
+            post_filters["created__date__gte"] = start_date
+        if end_date:
+            vehicle_filters["added_at__date__lte"] = start_date
+            expense_filters["date__lte"] = end_date
+            maintenance_filters["date__lte"] = end_date
+            post_filters["created__date__lte"] = end_date
+
         # All user vehicles, expenses & maintenance
-        vehicles = Vehicle.objects.filter(owner=user)
-        expenses = Expense.objects.filter(vehicle__owner=user)
-        maintenance = MaintenanceLog.objects.filter(vehicle__owner=user)
+        vehicles = Vehicle.objects.filter(**vehicle_filters)
+        expenses = Expense.objects.filter(**expense_filters)
+        maintenance = MaintenanceLog.objects.filter(**maintenance_filters)
+        posts = Post.objects.filter(**post_filters)
 
         # Key metrics
         context = super().get_context_data(**kwargs)
+        context["start_date"] = start_str
+        context["end_date"] = end_str
+
         context["vehicles_count"] = vehicles.count()
         context["expense_count"] = expenses.count()
         context["maintenance_count"] = maintenance.count()
@@ -41,8 +81,31 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         expense_cat_qs = expenses.values("category").distinct()
         context["category_count"] = expense_cat_qs.count()
 
+        # … inside get_context_data(), after you define `vehicles` …
+        vehicle_time_qs = (
+            vehicles
+            .annotate(month=TruncMonth('added_at'))
+            .values('month')
+            .annotate(count=Count('id'))
+            .order_by('month')
+        )
+        context['vehicles_months'] = [
+            item['month'].strftime('%b %Y') for item in vehicle_time_qs
+        ]
+        context['vehicles_month_counts'] = [
+            item['count'] for item in vehicle_time_qs
+        ]
+
         # Total spent
-        context["total_spent"] = expenses.aggregate(total=Sum("amount"))["total"] or 0
+        context["total_spent_expenses"] = (
+            expenses.aggregate(total=Sum("amount"))["total"] or 0
+        )
+        context["total_spent_maintenance"] = (
+            maintenance.aggregate(total=Sum("amount"))["total"] or 0
+        )
+        context["total_spent"] = (
+            context["total_spent_expenses"] + context["total_spent_maintenance"]
+        )
 
         # Expense by category
         cat_totals_qs = expenses.values("category").annotate(total=Sum("amount"))
@@ -68,7 +131,6 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         context["vehicle_labels"] = [item["vehicle__reg_number"] for item in veh_exp_qs]
         context["vehicle_totals"] = [float(item["total"]) for item in veh_exp_qs]
 
-        posts = Post.objects.filter(author=user)
         # Basic counts
         context["posts_count"] = posts.count()
         context["solved_posts_count"] = posts.filter(solved=True).count()

@@ -23,8 +23,14 @@ class MaintenanceLog(models.Model):
         default=ServiceType.OTHER,
         help_text="Type of maintenance performed.",
     )
+    amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        help_text="Cost of service in GBP (£).",
+    )
     notes = models.TextField(blank=True)
-
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -34,6 +40,13 @@ class MaintenanceLog(models.Model):
         indexes = [
             models.Index(fields=["vehicle", "date"]),
         ]
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        v = self.vehicle
+        if v.milage is None or self.mileage > v.milage:
+            v.milage = self.mileage
+            v.save(update_fields=["milage"])
 
     def __str__(self):
         return f"{self.get_service_type_display()} on {self.date} ({self.vehicle.reg_number})"
