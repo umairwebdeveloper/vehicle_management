@@ -66,7 +66,7 @@
                             <td>{{ log.date }}</td>
                             <td>{{ log.get_service_type_display }}</td>
                             <td>{{ log.mileage }}</td>
-                            <td class="text-end">£{{ log.amount }}</td>
+                            <td class="text-end">€{{ log.amount }}</td>
                             <td class="text-end">
                                 <a href="/logs/maintenance/{{log.id}}/edit/" class="btn btn-sm shadow-sm btn-outline-secondary">
                                     <i class="bi bi-pencil"></i>
@@ -108,7 +108,7 @@
                             <tr>
                                 <td>{{ exp.date }}</td>
                                 <td>{{ exp.get_category_display }}</td>
-                                <td class="text-end">£{{ exp.amount }}</td>
+                                <td class="text-end">€{{ exp.amount }}</td>
                                 <td class="text-end">
                                     <a href="/logs/expense/{{exp.id}}/edit/" class="btn btn-sm shadow-sm btn-outline-secondary">
                                         <i class="bi bi-pencil"></i>

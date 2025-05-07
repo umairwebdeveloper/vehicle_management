@@ -15,7 +15,7 @@
         <li class="list-group-item"><strong>Date:</strong> {{ object.date }}</li>
         <li class="list-group-item"><strong>Service Type:</strong> {{ object.get_service_type_display }}</li>
         <li class="list-group-item"><strong>Mileage:</strong> {{ object.mileage }}</li>
-        <li class="list-group-item"><strong>Cost:</strong> £{{ object.amount }}</li>
+        <li class="list-group-item"><strong>Cost:</strong> €{{ object.amount }}</li>
         {% if object.notes %}
         <li class="list-group-item"><strong>Notes:</strong> {{ object.notes }}</li>
         {% endif %}

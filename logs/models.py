@@ -28,7 +28,7 @@ class MaintenanceLog(models.Model):
         decimal_places=2,
         null=True,
         blank=True,
-        help_text="Cost of service in GBP (£).",
+        help_text="Cost of service in GBP (€).",
     )
     notes = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -72,7 +72,7 @@ class Expense(models.Model):
         help_text="Expense category.",
     )
     amount = models.DecimalField(
-        max_digits=10, decimal_places=2, help_text="Amount in GBP (£)."
+        max_digits=10, decimal_places=2, help_text="Amount in GBP (€)."
     )
     notes = models.TextField(blank=True)
 
@@ -87,4 +87,4 @@ class Expense(models.Model):
         ]
 
     def __str__(self):
-        return f"£{self.amount} {self.get_category_display()} on {self.date}"
+        return f"€{self.amount} {self.get_category_display()} on {self.date}"

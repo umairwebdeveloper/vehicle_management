@@ -14,7 +14,7 @@
     <ul class="list-group mb-4">
         <li class="list-group-item"><strong>Date:</strong> {{ object.date }}</li>
         <li class="list-group-item"><strong>Category:</strong> {{ object.get_category_display }}</li>
-        <li class="list-group-item"><strong>Amount:</strong> £{{ object.amount }}</li>
+        <li class="list-group-item"><strong>Amount:</strong> €{{ object.amount }}</li>
         {% if object.notes %}
         <li class="list-group-item"><strong>Notes:</strong> {{ object.notes }}</li>
         {% endif %}
