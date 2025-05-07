@@ -6,26 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("logs", "0002_maintenancelog_amount"),
+        ('logs', '0002_maintenancelog_amount'),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name="expense",
-            name="amount",
-            field=models.DecimalField(
-                decimal_places=2, help_text="Amount in GBP (£).", max_digits=10
-            ),
+            model_name='expense',
+            name='amount',
+            field=models.DecimalField(decimal_places=2, help_text='Amount in GBP (€).', max_digits=10),
         ),
         migrations.AlterField(
-            model_name="maintenancelog",
-            name="amount",
-            field=models.DecimalField(
-                blank=True,
-                decimal_places=2,
-                help_text="Cost of service in GBP (£).",
-                max_digits=10,
-                null=True,
-            ),
+            model_name='maintenancelog',
+            name='amount',
+            field=models.DecimalField(blank=True, decimal_places=2, help_text='Cost of service in GBP (€).', max_digits=10, null=True),
         ),
     ]
