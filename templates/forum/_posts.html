@@ -109,7 +109,7 @@
             <div class="d-flex align-items-center">
             <button
                 type="button"
-                class="btn btn-outline-secondary shadow-sm btn-sm reply-btn me-2"
+                class="btn btn-outline-secondary shadow-sm btn-sm reply-btn me-2 text-nowrap"
                 data-post-id="{{ post.pk }}"
                 data-post-title="{{ post.title|escapejs }}"
             >
@@ -118,7 +118,7 @@
 
             <a
                 href="{% url 'forum:upvote' post.pk %}"
-                class="btn shadow-sm btn-sm reply-btn me-2
+                class="btn shadow-sm btn-sm reply-btn me-2 text-nowrap
                 {% if post.is_liked %}
                     btn-secondary
                 {% else %}
